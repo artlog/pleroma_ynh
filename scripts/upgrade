@@ -115,7 +115,7 @@ yunohost service add "$app" --description="$app daemon for Pleroma"
 #=================================================
 ynh_script_progression "Making upgrade..."
 
-ynh_hide_warnings ynh_exec_as_app -i "$install_dir/live/bin/pleroma_ctl" migrate
+ynh_hide_warnings ynh_exec_as_app "$install_dir/live/bin/pleroma_ctl" migrate
 
 #=================================================
 # UPDATE A CONFIG FILE
