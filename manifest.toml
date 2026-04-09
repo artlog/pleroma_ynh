@@ -7,7 +7,7 @@ name = "Pleroma"
 description.en = "Federated social networking server built on open protocols"
 description.fr = "Serveur de réseautage social fédéré basé sur des protocoles ouverts"
 
-version = "2.8.0~ynh2"
+version = "2.10.0~ynh1"
 
 maintainers = []
 
@@ -20,7 +20,7 @@ cpe = "cpe:2.3:a:kpherox:pleroma"
 fund = "https://liberapay.com/Pleroma-euro/"
 
 [integration]
-yunohost = ">= 12.0.0"
+yunohost = ">= 13.0.0"
 architectures = ["amd64", "armhf", "arm64"]
 multi_instance = false
 
@@ -74,16 +74,9 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources.main]
-    amd64.url = "https://git.pleroma.social/pleroma/pleroma/-/jobs/283011/artifacts/download"
-    amd64.sha256 = "31440d91e7448cd3912144638ea7c59300d45c2fecfad24f0cf9c8ea91058ce0"
-
-    armhf.url = "https://git.pleroma.social/pleroma/pleroma/-/jobs/282573/artifacts/download"
-    armhf.sha256 = "fdb6e7103a1de055102c30158f1153be468d424a1c9b713dd2571deb2aa20f4f"
-
-    arm64.url = "https://git.pleroma.social/pleroma/pleroma/-/jobs/283015/artifacts/download"
-    arm64.sha256 = "ffb9f5c56531076ca14bb23c25d7e78547fb4ef37c7eafd81740bfde966358a8"
-
-    format = "zip"
+    url = "https://git.pleroma.social/pleroma/pleroma/archive/v2.10.0.tar.gz"
+    sha256 = "7105999e3abd97d4c04196a231ef34d6262be43855ad927b3d6c119058d97fd4"
+    format = "tar.gz"
     extract = true
 
     [resources.system_user]
@@ -115,6 +108,7 @@ ram.runtime = "50M"
     packages = [
         "curl",
         "unzip",
+        "libncurses6",
         "imagemagick",
         "ffmpeg",
         "exiftool",
@@ -123,15 +117,13 @@ ram.runtime = "50M"
         "postgresql-contrib",
         "libmagic-dev",
         "libimage-exiftool-perl",
-        "libvips"
+        "libvips",
+        "build-essential",
+        "cmake",
+        "elixir",
+        "erlang-dev",
+        "erlang-nox"
     ]
-    packages_from_raw_bash = """
-    if [[ $YNH_DEBIAN_VERSION == "bookworm" ]]; then
-        echo "libncurses5";
-    elif [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
-        echo "libncurses6";
-    fi
-    """
 
     [resources.database]
     # This will automatically provision/deprovison a DB and store the corresponding credentials in settings $db_user, $db_name, $db_pwd

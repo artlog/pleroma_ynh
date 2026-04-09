@@ -43,19 +43,20 @@ if yunohost firewall list | grep -q "\- $port$"; then
     ynh_exec_warn_less yunohost firewall disallow TCP "$port"
 fi
 
-# Remove old repository
-ynh_secure_remove --file="/etc/apt/sources.list.d/erlang-solutions.list"
-apt-key del A14F4FCA
-
-# Switch to $install_dir/live
-if [ ! -d "$install_dir/live" ]; then
-    mv "$install_dir/$app" "$install_dir/live"
+if [ -f /etc/apt/sources.list.d/erlang-solutions.list ]; then
+    # Remove old repository
+    ynh_secure_remove --file="/etc/apt/sources.list.d/erlang-solutions.list"
+    apt-key del A14F4FCA
 fi
-
 config="/etc/$app/config.exs"
 
 if ynh_compare_current_package_version --comparison le --version "1.1.1~ynh1"; then
     ynh_script_progression --message="Upgrading to OTP release..." --weight=1
+
+    # Switch to $install_dir/live
+    if [ ! -d "$install_dir/live" ]; then
+	mv "$install_dir/$app" "$install_dir/live"
+    fi
 
     # Give permission to the data_dir
     chown -R "$app":"$app" "$data_dir"
@@ -100,9 +101,29 @@ ynh_replace_string --target_file="$config" \
 #=================================================
 ynh_script_progression --message="Upgrading source files..." --weight=1
 
-ynh_setup_source --dest_dir="$install_dir/live" --full_replace=1
+# This is a MIX version, for OTP this was in $install_dir/live.
+pleroma_install_dir="$install_dir/mix"
+
+ynh_setup_source --dest_dir="$pleroma_install_dir" --full_replace=1
 
 chown -R "$app:$app" "$install_dir"
+
+#=================================================
+# BUILD LOCALY
+#=================================================
+ynh_script_progression --message="Building localy MIX..." --weight=1
+
+MIX_ENV=prod
+
+# OTP -> MIX hack since PLEROMA_CONFIG_PATH is not used by mix , only in OTP releases.
+ln -s "$config" "$pleroma_install_dir/config/${MIX_ENV}.secret.exs"
+
+pushd  "$pleroma_install_dir" 2>/dev/null
+# BUILD
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix local.hex --force
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix local.rebar --force
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix deps.get
+popd 2>/dev/null
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
@@ -128,14 +149,14 @@ yunohost service add "$app" --description="$app daemon for Pleroma"
 #=================================================
 ynh_script_progression --message="Making upgrade..." --weight=1
 
-ynh_exec_warn_less ynh_exec_as "$app" -i "$install_dir/live/bin/pleroma_ctl" migrate
+pushd $pleroma_install_dir 2>/dev/null
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix ecto.migrate
+popd 2>/dev/null
 
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=1
-
-config="/etc/$app/config.exs"
 
 ynh_backup_if_checksum_is_different --file="$config"
 
@@ -148,6 +169,20 @@ chown "$app:$app" "$config"
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name="$app" --action="start" --log_path=systemd --line_match="Access Pleroma.Web.Endpoint"
+
+#=================================================
+# CLEANUP PREVIOUS VERSION
+#=================================================
+
+# older is not in use anymore
+if [ -d "$install_dir/$app" ]; then
+     ynh_safe_rm "$install_dir/$app"
+fi
+
+# OTP is not in use anymore
+if [ -d "$install_dir/live" ]; then
+     ynh_safe_rm "$install_dir/live"
+fi
 
 #=================================================
 # END OF SCRIPT

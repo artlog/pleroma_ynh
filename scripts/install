@@ -33,10 +33,14 @@ fi
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=1
 
+# This is a MIX version, for OTP this was in $install_dir/live.
+pleroma_install_dir="$install_dir/mix"
+
 # Download, check integrity, uncompress and patch the source from manifest.toml
-ynh_setup_source --dest_dir="$install_dir/live"
+ynh_setup_source --dest_dir="$pleroma_install_dir"
 
 chown -R "$app:www-data" "$install_dir"
+
 
 #=================================================
 # UPDATE THE POSTGRESQL DATABASE
@@ -73,9 +77,17 @@ config="/etc/$app/config.exs"
 mkdir -p "/etc/$app"
 chown "$app:$app" "/etc/$app"
 
+MIX_ENV=prod
+
+pushd  "$pleroma_install_dir" 2>/dev/null
+# BUILD
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix local.hex --force
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix local.rebar --force
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix deps.get
+
 # Generate instance
-ynh_exec_warn_less ynh_exec_as "$app" -i \
-"$install_dir/live/bin/pleroma_ctl" instance gen \
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV \
+mix pleroma.instance gen \
     --force \
     --output "$config" \
     --output-psql /tmp/setup_db.psql \
@@ -98,8 +110,12 @@ ynh_exec_warn_less ynh_exec_as "$app" -i \
     --read-uploads-description Y \
     --anonymize-uploads Y \
     --dedupe-uploads Y
+popd 2>/dev/null
 
 cat "../conf/ldap.exs" >> "$config"
+
+# OTP -> MIX hack since PLEROMA_CONFIG_PATH is not used by mix , only in OTP releases.
+ln -s "$config" "$pleroma_install_dir/config/${MIX_ENV}.secret.exs"
 
 ynh_replace_string --target_file="$config" \
     --match_string="config :pleroma, configurable_from_database: false" \
@@ -109,12 +125,16 @@ ynh_replace_string --target_file="$config" \
     --match_string="registrations_open: true" \
     --replace_string="registrations_open: $(boolstr "$registration")"
 
-ynh_exec_warn_less ynh_exec_as "$app" -i "$install_dir/live/bin/pleroma_ctl" migrate
+pushd  "$pleroma_install_dir" 2>/dev/null
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix ecto.migrate
+
 ynh_systemd_action --service_name="$app" --action="start" --log_path=systemd --line_match="Access Pleroma.Web.Endpoint"
 
 # Add user
-ynh_exec_warn_less ynh_exec_as "$app" -i "$install_dir/live/bin/pleroma_ctl" user new "$admin" "$admin_email" --password "$password" --moderator --admin -y
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix pleroma.user new "$admin" "$admin_email" --password "$password" --moderator --admin -y
+
 ynh_systemd_action --service_name="$app" --action="stop" --log_path=systemd
+popd 2>/dev/null
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$config"
@@ -134,9 +154,11 @@ ynh_systemd_action --service_name="$app" --action="start" --log_path=systemd --l
 # POST INSTALL
 #=================================================
 
+pushd  "$pleroma_install_dir" 2>/dev/null
 # Correct path to 'static dir' in DB
 # This must be done when Pleroma is running (i.e. after install and start)
-ynh_exec_warn_less ynh_exec_as "$app" -i "$install_dir/live/bin/pleroma_ctl" config migrate_to_db
+ynh_exec_warn_less ynh_exec_as "$app" "HOME=$pleroma_install_dir" MIX_ENV=$MIX_ENV mix pleroma.config migrate_to_db
+popd 2>/dev/null
 
 #=================================================
 # END OF SCRIPT
