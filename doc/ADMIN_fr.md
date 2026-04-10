@@ -9,7 +9,7 @@ Si une version 'OTP' est disponible depuis le projet pleroma, il est fourni avec
 
 | MIX                         | Official Package               | With Yunohost                           |
 | --------------------------- | ------------------------------ | --------------------------------------- |
-| Install directory           | `/opt/pleroma`                 | `/var/www/pleroma/live/`                |
+| Install directory           | `/opt/pleroma`                 | `/var/www/pleroma/mix/`                 |
 | Static directory            | `instance/static`              | `/home/yunohost.app/pleroma/`           |
 | Configuration file          | `config/${MIX_ENV}.secret.exs` | `/etc/pleroma/config.exs`               |
 | Command line path           | `mix`                          | `mix` with pleroma HOME (see examples)  |

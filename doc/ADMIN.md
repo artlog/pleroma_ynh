@@ -8,7 +8,7 @@ If an OTP ( 'Open Telecom Platform' ) version is available from pleroma upstream
 
 | MIX                         | Official Package               | With Yunohost                           |
 | --------------------------- | ------------------------------ | --------------------------------------- |
-| Install directory           | `/opt/pleroma`                 | `/var/www/pleroma/live/`                |
+| Install directory           | `/opt/pleroma`                 | `/var/www/pleroma/mix/`                 |
 | Static directory            | `instance/static`              | `/home/yunohost.app/pleroma/`           |
 | Configuration file          | `config/${MIX_ENV}.secret.exs` | `/etc/pleroma/config.exs`               |
 | Command line path           | `mix`                          | `mix` with pleroma HOME (see examples)  |
