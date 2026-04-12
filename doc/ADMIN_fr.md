@@ -3,7 +3,7 @@
 Quelques informations, à toutes fins utiles, sur les différences entre une installation directe de Pleroma (depuis les _releases_ du dépôt officiel) et l’installation avec le package d’application de Yunohost.
 
 Il existe deux possibilités pour obtenir une installation pleroma depuis le upstream : MIX et OTP
-MIX depuis les sources requiert une compilation mais utuiliser les dépendances du système, c'est à dire les paquets elixir et erlang.
+MIX depuis les sources requiert une compilation mais utilise les dépendances du système, c'est à dire les paquets elixir et erlang.
 Si une version 'OTP' est disponible depuis le projet pleroma, il est fourni avec les binaires elixir et erland et des outils spécifiques OTP.
 
 
