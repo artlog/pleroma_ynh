@@ -5,7 +5,7 @@ Some information, for all intents and purposes, on the differences between a dir
 |                             | Official Package           | With Yunohost                           |
 | --------------------------- | -------------------------- | --------------------------------------- |
 | Install directory           | `/opt/pleroma`              | `/var/www/pleroma/live/`                 |
-| Static directory            | `/var/lib/pleroma/static`   | `/etc/pleroma/config.exs`                |
+| Static directory            | `/var/lib/pleroma/static`   | `/home/yunohost.app/pleroma/`                |
 | Configuration file          | `/etc/pleroma/config.exs`   | `/etc/pleroma/config.exs`                |
 | Command line path           | `/bin/pleroma_ctl`         | `/var/www/pleroma/live/bin/pleroma_ctl`  |
 
