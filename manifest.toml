@@ -21,7 +21,7 @@ fund = "https://liberapay.com/Pleroma-euro/"
 
 [integration]
 yunohost = ">= 12.0.0"
-architectures = ["amd64", "armhf", "arm64"]
+architectures = ["amd64", "arm64"]
 multi_instance = false
 
 ldap = true
@@ -74,16 +74,12 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources.main]
-    amd64.url = "https://git.pleroma.social/pleroma/pleroma/-/jobs/283011/artifacts/download"
-    amd64.sha256 = "31440d91e7448cd3912144638ea7c59300d45c2fecfad24f0cf9c8ea91058ce0"
+    amd64.url = "https://github.com/Yunohost-Apps/pleroma-otp/releases/download/v2.8.0/pleroma-v2.8.0-bookworm-amd64.tar.gz"
+    amd64.sha256 = "e6aa2edbef2cef3b1f60b9a74d39a7aeb87512640db5c6744ce3ea80872336be"
+    
+    arm64.url = "https://github.com/Yunohost-Apps/pleroma-otp/releases/download/v2.8.0/pleroma-v2.8.0-bookworm-arm64.tar.gz"
+    arm64.sha256 = "7daa2a728fea97f94149fa672ba668150beb3a1cf2822b6cbc7ef3dc782e707f"
 
-    armhf.url = "https://git.pleroma.social/pleroma/pleroma/-/jobs/282573/artifacts/download"
-    armhf.sha256 = "fdb6e7103a1de055102c30158f1153be468d424a1c9b713dd2571deb2aa20f4f"
-
-    arm64.url = "https://git.pleroma.social/pleroma/pleroma/-/jobs/283015/artifacts/download"
-    arm64.sha256 = "ffb9f5c56531076ca14bb23c25d7e78547fb4ef37c7eafd81740bfde966358a8"
-
-    format = "zip"
     extract = true
 
     [resources.system_user]
