@@ -10,7 +10,7 @@ ynh_script_progression "Stopping $app's systemd service..."
 
 ynh_systemctl --service=$app --action="stop" --log_path=systemd --wait_until="Stopped $app"
 
-if ynh_compare_current_package_version --comparison gt --version "1.1.1~ynh1"; then
+if ! ynh_app_upgrading_from_version_before_or_equal_to "1.1.1~ynh1"; then
     pkill -u "$app" || true
 fi
 
