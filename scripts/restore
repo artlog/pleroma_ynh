@@ -50,8 +50,12 @@ yunohost service add "$app" --description="$app daemon for Pleroma"
 ynh_script_progression "Restoring various files..."
 
 ynh_restore "/etc/$app/"
-chmod 400 "/etc/$app/config.exs"
-chown "$app:$app" "/etc/$app/config.exs"
+
+config="/etc/$app/config.exs"
+
+# access to directory by $app user is required by systemd
+chown -R "$app:$app" "/etc/$app"
+chmod 400 "$config"
 
 #=================================================
 # RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
