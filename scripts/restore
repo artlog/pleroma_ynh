@@ -55,6 +55,7 @@ config="/etc/$app/config.exs"
 
 # access to directory by $app user is required by systemd
 chown -R "$app:$app" "/etc/$app"
+chmod 500 "/etc/$app"
 chmod 400 "$config"
 
 #=================================================
