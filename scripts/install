@@ -29,6 +29,9 @@ ynh_script_progression "Setting up source files..."
 
 ynh_setup_source --dest_dir="$install_dir/live"
 
+# pleroma service requires to have write access to libraries ( ex #302 )
+chown -R "$app:$app" "$install_dir/live"
+
 #=================================================
 # UPDATE THE POSTGRESQL DATABASE
 #=================================================
