@@ -7,7 +7,7 @@ name = "Pleroma"
 description.en = "Federated social networking server built on open protocols"
 description.fr = "Serveur de réseautage social fédéré basé sur des protocoles ouverts"
 
-version = "2.11.1~ynh1"
+version = "2.11.1~trixie_ynh1"
 
 maintainers = []
 
@@ -20,7 +20,7 @@ cpe = "cpe:2.3:a:kpherox:pleroma"
 fund = "https://liberapay.com/Pleroma-euro/"
 
 [integration]
-yunohost = ">=12.1.39"
+yunohost = ">=13.0.8"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = false
@@ -75,11 +75,11 @@ ram.runtime = "50M"
 [resources]
     [resources.sources.main]
 
-    amd64.url = "https://github.com/YunoHost-Apps/pleroma-otp/releases/download/v2.11.1/pleroma-v2.11.1-bookworm-amd64.tar.gz"
-    amd64.sha256 = "04d9bce9dc775a5060d2724d5cb6f7738e68cb5d2117a33e32970f43d0eec255"
+    amd64.url = "https://github.com/YunoHost-Apps/pleroma-otp/releases/download/v2.11.1/pleroma-v2.11.1-trixie-amd64.tar.gz"
+    amd64.sha256 = "98e9cf614b895cfafb7f6a55dfa17171f1e76ab0ab8eb8b331d692c973742f85"
 
-    arm64.url = "https://github.com/YunoHost-Apps/pleroma-otp/releases/download/v2.11.1/pleroma-v2.11.1-bookworm-arm64.tar.gz"
-    arm64.sha256 = "514ce26698d69d966df5eed6688c0165d97c101bfb196090e45d65f3613d1119"
+    arm64.url = "https://github.com/YunoHost-Apps/pleroma-otp/releases/download/v2.11.1/pleroma-v2.11.1-trixie-arm64.tar.gz"
+    arm64.sha256 = "567c0133af377263bd6867a073ee3deed97ada0bc4983e6fe7138613a7b31721"
 
     extract = true
 
@@ -109,15 +109,9 @@ ram.runtime = "50M"
         "postgresql-contrib",
         "libmagic-dev",
         "libimage-exiftool-perl",
-        "libvips"
+        "libvips",
+        "libncurses6"
     ]
-    packages_from_raw_bash = """
-    if [[ $YNH_DEBIAN_VERSION == "bookworm" ]]; then
-        echo "libncurses5";
-    elif [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
-        echo "libncurses6";
-    fi
-    """
 
     [resources.database]
     type = "postgresql"
